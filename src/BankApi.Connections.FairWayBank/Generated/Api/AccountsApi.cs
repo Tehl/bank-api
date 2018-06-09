@@ -13,11 +13,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using BankApi.Connections.FairWayBank.Generated.Model;
 using IO.Swagger.Client;
-using IO.Swagger.Model;
 using RestSharp;
 
-namespace IO.Swagger.Api
+namespace BankApi.Connections.FairWayBank.Generated.Api
 {
     /// <summary>
     ///     Represents a collection of functions to interact with the API endpoints

@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace IO.Swagger.Model
+namespace BankApi.Connections.FairWayBank.Generated.Model
 {
     /// <summary>
     ///     AccountViewModel
