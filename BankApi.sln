@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Connections.FairWay
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Logic", "src\BankApi.Logic\BankApi.Logic.csproj", "{E5AEC11A-E2DF-421A-87CC-6E6DDB6E6DF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Tests.Connections.BizfiBank", "BankApi.Tests.Connections.BizfiBank\BankApi.Tests.Connections.BizfiBank.csproj", "{FF5F03B8-AD86-4990-BA67-DA5F5CFAE92E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Tests.Connections.BizfiBank", "src\BankApi.Tests.Connections.BizfiBank\BankApi.Tests.Connections.BizfiBank.csproj", "{FF5F03B8-AD86-4990-BA67-DA5F5CFAE92E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Tests", "src\BankApi.Tests\BankApi.Tests.csproj", "{FDF1DC0B-D2FB-4301-B91B-EE76132D1EE8}"
 EndProject

@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\BankApi.Connections.BizfiBank\BankApi.Connections.BizfiBank.csproj" />
-    <ProjectReference Include="..\src\BankApi.Tests\BankApi.Tests.csproj" />
+    <ProjectReference Include="..\BankApi.Connections.BizfiBank\BankApi.Connections.BizfiBank.csproj" />
+    <ProjectReference Include="..\BankApi.Tests\BankApi.Tests.csproj" />
   </ItemGroup>
 
 </Project>
