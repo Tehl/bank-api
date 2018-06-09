@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Connections.BizfiBa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Connections.FairWayBank", "src\BankApi.Connections.FairWayBank\BankApi.Connections.FairWayBank.csproj", "{389DB7D5-1EF8-47F2-A17F-45766B59E9B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Logic", "src\BankApi.Logic\BankApi.Logic.csproj", "{E5AEC11A-E2DF-421A-87CC-6E6DDB6E6DF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Tests.Connections.BizfiBank", "BankApi.Tests.Connections.BizfiBank\BankApi.Tests.Connections.BizfiBank.csproj", "{FF5F03B8-AD86-4990-BA67-DA5F5CFAE92E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi.Tests", "src\BankApi.Tests\BankApi.Tests.csproj", "{FDF1DC0B-D2FB-4301-B91B-EE76132D1EE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +39,18 @@ Global
 		{389DB7D5-1EF8-47F2-A17F-45766B59E9B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{389DB7D5-1EF8-47F2-A17F-45766B59E9B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{389DB7D5-1EF8-47F2-A17F-45766B59E9B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5AEC11A-E2DF-421A-87CC-6E6DDB6E6DF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5AEC11A-E2DF-421A-87CC-6E6DDB6E6DF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5AEC11A-E2DF-421A-87CC-6E6DDB6E6DF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5AEC11A-E2DF-421A-87CC-6E6DDB6E6DF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF5F03B8-AD86-4990-BA67-DA5F5CFAE92E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF5F03B8-AD86-4990-BA67-DA5F5CFAE92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF5F03B8-AD86-4990-BA67-DA5F5CFAE92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF5F03B8-AD86-4990-BA67-DA5F5CFAE92E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDF1DC0B-D2FB-4301-B91B-EE76132D1EE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDF1DC0B-D2FB-4301-B91B-EE76132D1EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDF1DC0B-D2FB-4301-B91B-EE76132D1EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDF1DC0B-D2FB-4301-B91B-EE76132D1EE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
