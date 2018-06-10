@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BankApi.Logic\BankApi.Logic.csproj" />
     <ProjectReference Include="..\IO.Swagger\IO.Swagger.csproj" />
   </ItemGroup>

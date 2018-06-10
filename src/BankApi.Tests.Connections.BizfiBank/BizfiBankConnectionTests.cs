@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using BankApi.Connections.BizfiBank;
 using BankApi.Connections.BizfiBank.Generated.Api;
@@ -120,7 +121,7 @@ namespace BankApi.Tests.Connections.BizfiBank
         [Test]
         public async Task GetAccountDetailsHandlesServerError()
         {
-            const int statusCodeServerError = 500;
+            const int statusCodeServerError = (int) HttpStatusCode.InternalServerError;
 
             var accountsApi = Substitute.For<IAccountsApi>();
             accountsApi.ApiV1AccountsByAccountNumberGetAsync("")
