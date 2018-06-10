@@ -30,9 +30,9 @@ namespace BankApi.Logic.Data.Repositories
         AppUser GetUserByUsername(string username);
 
         /// <summary>
-        ///     Gets all users from the underlying store
+        ///     Retrieves all AppUsers from the underlying store
         /// </summary>
-        /// <returns>IQueryable instance representing all users in the store</returns>
+        /// <returns>IQueryable instance representing all AppUsers in the store</returns>
         IQueryable<AppUser> GetAllUsers();
     }
 }
