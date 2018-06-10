@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using IO.Swagger.Server.Filters;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace BankApi.Server
 {
@@ -14,19 +19,51 @@ namespace BankApi.Server
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            // add framework services
+            services
+                .AddMvc()
+                .AddJsonOptions(opts =>
+                {
+                    opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    opts.SerializerSettings.Converters.Add(new StringEnumConverter
+                    {
+                        CamelCaseText = true
+                    });
+                });
+
+            // add Swagger components
+            services
+                .AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info
+                    {
+                        Version = "v1",
+                        Title = "BankApi",
+                        Description = "Developer challenge using Swagger and ASP.NET Core"
+                    });
+                    c.CustomSchemaIds(type => type.FriendlyId(true));
+                    c.DescribeAllEnumsAsStrings();
+                    c.OperationFilter<GeneratePathParamsValidationFilter>();
+                });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // set up mvc framework
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
-            app.UseMvc();
+            app
+                .UseMvc()
+                .UseDefaultFiles()
+                .UseStaticFiles();
+
+            // add Swagger components
+            app
+                .UseSwagger()
+                .UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger.json", "BankApi"); });
         }
     }
 }

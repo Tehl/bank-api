@@ -1,0 +1,374 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "BankApi",
+    "description": "Developer challenge using Swagger and ASP.NET Core"
+  },
+  "paths": {
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Gets a list of all users in the system",
+        "operationId": "ApiV1UsersGetAll",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of users",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UserViewModel"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "user_id": 1,
+                  "username": "John Doe"
+                },
+                {
+                  "user_id": 2,
+                  "username": "Jane Doe"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Creates a new user",
+        "operationId": "ApiV1UsersCreate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_data",
+            "in": "body",
+            "description": "User data for the user to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateUserViewModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully created user account",
+            "schema": {
+              "$ref": "#/definitions/UserViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "user_id": 1,
+                "username": "John Doe"
+              }
+            }
+          },
+          "400": {
+            "description": "New user data invalid",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Account number '{account_number}' does not fit format ^[\\d]{8}$",
+                "status": 400,
+                "errorCode": 1001124
+              }
+            }
+          },
+          "404": {
+            "description": "Bank account not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Unable to find bank account with account number '{account_number}'",
+                "status": 404,
+                "errorCode": 1001123
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{user_id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Gets details about a specific user",
+        "operationId": "ApiV1UsersGetById",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Id of the user to return",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved user data",
+            "schema": {
+              "$ref": "#/definitions/UserViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "user_id": 1,
+                "username": "John Doe"
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Unable to find user with user id '{user_id}'",
+                "status": 404
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{user_id}/accounts": {
+      "get": {
+        "tags": [
+          "User Accounts"
+        ],
+        "summary": "Gets a list of bank accounts owned by a user",
+        "operationId": "ApiV1UsersGetAccountsByUserId",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Id of the user to fetch bank accounts for",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of bank accounts for user",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AccountOverviewViewModel"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "account_id": 1,
+                  "bank_id": "BizfiBank",
+                  "account_number": "00112233"
+                },
+                {
+                  "account_id": 2,
+                  "bank_id": "FairWayBank",
+                  "account_number": "01020304"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Unable to find user with user id '{user_id}'",
+                "status": 404
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User Accounts"
+        ],
+        "summary": "Adds a new bank account to a user",
+        "operationId": "ApiV1UsersAddAccount",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Id of the user who owns the bank account",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "account_data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddAccountViewModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully added bank account",
+            "schema": {
+              "$ref": "#/definitions/AccountOverviewViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "account_id": 1,
+                "bank_id": "BizfiBank",
+                "account_number": "00112233"
+              }
+            }
+          },
+          "400": {
+            "description": "New account data invalid",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Account number '{account_number}' does not fit format ^[\\d]{8}$",
+                "status": 400,
+                "errorCode": 1001124
+              }
+            }
+          },
+          "404": {
+            "description": "Bank account not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Unable to find bank account with account number '{account_number}'",
+                "status": 404,
+                "errorCode": 1001123
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "UserViewModel": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "description": "The id of the user account",
+          "type": "integer",
+          "format": "int32"
+        },
+        "username": {
+          "description": "The username of the user account",
+          "type": "string"
+        }
+      }
+    },
+    "CreateUserViewModel": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "The username of the user account",
+          "type": "string"
+        },
+        "bank_id": {
+          "description": "The id of the bank which holds the account",
+          "type": "string"
+        },
+        "account_number": {
+          "description": "The account number which identifies the bank account",
+          "type": "string"
+        }
+      }
+    },
+    "AccountOverviewViewModel": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "description": "The id of the bank account",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bank_id": {
+          "description": "The id of the bank which holds the account",
+          "type": "string"
+        },
+        "account_number": {
+          "description": "The account number which identifies the bank account",
+          "type": "string"
+        }
+      }
+    },
+    "AddAccountViewModel": {
+      "type": "object",
+      "properties": {
+        "bank_id": {
+          "description": "The id of the bank which holds the account",
+          "type": "string"
+        },
+        "account_number": {
+          "description": "The account number which identifies the bank account",
+          "type": "string"
+        }
+      }
+    },
+    "ErrorViewModel": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "A message that descibes the error",
+          "type": "string"
+        },
+        "status": {
+          "format": "int32",
+          "description": "The status of the error (should match http status code in response)",
+          "type": "integer"
+        },
+        "errorCode": {
+          "format": "int64",
+          "description": "The error code to quote or any correspodence with supprort",
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
