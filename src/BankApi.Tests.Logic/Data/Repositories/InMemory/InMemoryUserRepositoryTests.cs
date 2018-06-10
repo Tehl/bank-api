@@ -35,7 +35,7 @@ namespace BankApi.Tests.Logic.Data.Repositories.InMemory
         public void CreateUserGeneratesUniqueIds()
         {
             const string username1 = "TestUser1";
-            const string username2 = "TestUser1";
+            const string username2 = "TestUser2";
 
             var repository = new InMemoryUserRepository();
 
