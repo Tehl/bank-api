@@ -21,5 +21,20 @@ namespace BankApi.Server.Utilities
                 Username = appUser.Username
             };
         }
+
+        /// <summary>
+        ///     Creates a AccountOverviewViewModel from an BankAccount instance
+        /// </summary>
+        /// <param name="bankAccount">BankAccount to create a AccountOverviewViewModel from</param>
+        /// <returns>AccountOverviewViewModel instance representing the specified BankAccount</returns>
+        public static AccountOverviewViewModel CreateAccountOverviewViewModel(BankAccount bankAccount)
+        {
+            return new AccountOverviewViewModel
+            {
+                AccountId = bankAccount.Id,
+                BankId = bankAccount.BankId,
+                AccountNumber = bankAccount.AccountNumber
+            };
+        }
     }
 }

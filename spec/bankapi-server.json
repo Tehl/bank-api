@@ -224,6 +224,18 @@
               ]
             }
           },
+          "400": {
+            "description": "user_id is invalid",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "user_id is required",
+                "status": 400
+              }
+            }
+          },
           "404": {
             "description": "User not found",
             "schema": {

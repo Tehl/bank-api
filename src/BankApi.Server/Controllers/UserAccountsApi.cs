@@ -10,8 +10,11 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
 using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
+using BankApi.Server.Utilities;
 using IO.Swagger.Server.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -78,6 +81,7 @@ namespace BankApi.Server.Controllers
         /// </summary>
         /// <param name="user_id">Id of the user to fetch bank accounts for</param>
         /// <response code="200">Successfully retrieved list of bank accounts for user</response>
+        /// <response code="400">user_id is invalid</response>
         /// <response code="404">User not found</response>
         [HttpGet]
         [Route("/api/v1/users/{user_id}/accounts")]
@@ -85,26 +89,33 @@ namespace BankApi.Server.Controllers
         [SwaggerOperation("ApiV1UsersGetAccountsByUserId")]
         [SwaggerResponse(200, typeof(List<AccountOverviewViewModel>),
             "Successfully retrieved list of bank accounts for user")]
+        [SwaggerResponse(400, typeof(ErrorViewModel), "user_id is invalid")]
         [SwaggerResponse(404, typeof(ErrorViewModel), "User not found")]
         public virtual IActionResult ApiV1UsersGetAccountsByUserId(
             [FromRoute] [Required] int? user_id
         )
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(List<AccountOverviewViewModel>));
+            if (!user_id.HasValue)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.BadRequest,
+                    "user_id is required"
+                );
 
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404, default(ErrorViewModel));
+            var user = _userRepository.GetUserById(user_id.Value);
 
-            string exampleJson = null;
-            exampleJson =
-                "[ {\r\n  \"account_id\" : 1,\r\n  \"bank_id\" : \"BizfiBank\",\r\n  \"account_number\" : \"00112233\"\r\n}, {\r\n  \"account_id\" : 2,\r\n  \"bank_id\" : \"FairWayBank\",\r\n  \"account_number\" : \"01020304\"\r\n} ]";
+            if (user == null)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.NotFound,
+                    $"User with id '{user_id}' does not exist"
+                );
 
-            var example = exampleJson != null
-                ? JsonConvert.DeserializeObject<List<AccountOverviewViewModel>>(exampleJson)
-                : default(List<AccountOverviewViewModel>);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var accounts = _accountRepository.GetAllAccountsByUserId(user_id.Value).ToList();
+
+            var models = accounts
+                .Select(ViewModelUtility.CreateAccountOverviewViewModel)
+                .ToList();
+
+            return Ok(models);
         }
     }
 }
