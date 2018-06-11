@@ -55,6 +55,30 @@ namespace BankApi.Tests.Server.Controllers
         }
 
         /// <summary>
+        ///     Tests that ApiV1UsersGetById returns 400 when a user id is not supplied
+        /// </summary>
+        /// <remarks>
+        ///     StatusCode should be 400
+        ///     Value should be an ErrorViewModel
+        /// </remarks>
+        [Test]
+        public void ApiV1UsersGetByIdHandlesUserIdNotSupplied()
+        {
+            var controller = new UsersApiController(null);
+
+            var actionResult = controller.ApiV1UsersGetById(null);
+            var contentResult = actionResult as ObjectResult;
+
+            Assert.That(contentResult, Is.Not.Null);
+            Assert.That(contentResult.StatusCode, Is.EqualTo((int) HttpStatusCode.BadRequest));
+
+            var userResult = contentResult.Value as ErrorViewModel;
+
+            Assert.That(userResult, Is.Not.Null);
+            Assert.That(userResult.Status, Is.EqualTo((int) HttpStatusCode.BadRequest));
+        }
+
+        /// <summary>
         ///     Tests that ApiV1UsersGetById returns 404 when the requested user does not exist
         /// </summary>
         /// <remarks>
@@ -66,10 +90,8 @@ namespace BankApi.Tests.Server.Controllers
         {
             const int requestedUserId = 1;
 
-            var allUsers = new AppUser[0];
-
             var userRepository = Substitute.For<IUserRepository>();
-            userRepository.GetAllUsers().Returns(allUsers.AsQueryable());
+            userRepository.GetUserById(0).ReturnsForAnyArgs((AppUser) null);
 
             var controller = new UsersApiController(userRepository);
 
@@ -98,10 +120,9 @@ namespace BankApi.Tests.Server.Controllers
             const int userId = 1;
 
             var user1 = new AppUser {Id = userId, Username = "User1"};
-            var allUsers = new[] {user1};
 
             var userRepository = Substitute.For<IUserRepository>();
-            userRepository.GetAllUsers().Returns(allUsers.AsQueryable());
+            userRepository.GetUserById(userId).Returns(user1);
 
             var controller = new UsersApiController(userRepository);
 

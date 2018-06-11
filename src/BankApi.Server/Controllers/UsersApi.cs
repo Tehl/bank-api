@@ -10,8 +10,11 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
 using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
+using BankApi.Server.Utilities;
 using IO.Swagger.Server.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -20,11 +23,16 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace BankApi.Server.Controllers
 {
     /// <summary>
+    ///     Provides API endpoints for the /users route
     /// </summary>
     public class UsersApiController : Controller
     {
         private readonly IUserRepository _userRepository;
 
+        /// <summary>
+        ///     Initializes the UsersApiController
+        /// </summary>
+        /// <param name="userRepository">Repository used to access AppUser information</param>
         public UsersApiController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
@@ -78,18 +86,13 @@ namespace BankApi.Server.Controllers
         [SwaggerResponse(200, typeof(List<UserViewModel>), "Successfully retrieved list of users")]
         public virtual IActionResult ApiV1UsersGetAll()
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(List<UserViewModel>));
+            var users = _userRepository.GetAllUsers().ToList();
 
-            string exampleJson = null;
-            exampleJson =
-                "[ {\r\n  \"user_id\" : 1,\r\n  \"username\" : \"John Doe\"\r\n}, {\r\n  \"user_id\" : 2,\r\n  \"username\" : \"Jane Doe\"\r\n} ]";
+            var models = users
+                .Select(ViewModelUtility.CreateUserViewModel)
+                .ToList();
 
-            var example = exampleJson != null
-                ? JsonConvert.DeserializeObject<List<UserViewModel>>(exampleJson)
-                : default(List<UserViewModel>);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            return Ok(models);
         }
 
         /// <summary>
@@ -97,31 +100,36 @@ namespace BankApi.Server.Controllers
         /// </summary>
         /// <param name="user_id">Id of the user to return</param>
         /// <response code="200">Successfully retrieved user data</response>
+        /// <response code="400">user_id is invalid</response>
         /// <response code="404">User not found</response>
         [HttpGet]
         [Route("/api/v1/users/{user_id}")]
         [ValidateModelState]
         [SwaggerOperation("ApiV1UsersGetById")]
         [SwaggerResponse(200, typeof(UserViewModel), "Successfully retrieved user data")]
+        [SwaggerResponse(400, typeof(ErrorViewModel), "user_id is invalid")]
         [SwaggerResponse(404, typeof(ErrorViewModel), "User not found")]
         public virtual IActionResult ApiV1UsersGetById(
             [FromRoute] [Required] int? user_id
         )
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(UserViewModel));
+            if (!user_id.HasValue)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.BadRequest,
+                    "user_id is required"
+                );
 
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404, default(ErrorViewModel));
+            var user = _userRepository.GetUserById(user_id.Value);
 
-            string exampleJson = null;
-            exampleJson = "{\r\n  \"user_id\" : 1,\r\n  \"username\" : \"John Doe\"\r\n}";
+            if (user == null)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.NotFound,
+                    $"User with id {user_id} does not exist"
+                );
 
-            var example = exampleJson != null
-                ? JsonConvert.DeserializeObject<UserViewModel>(exampleJson)
-                : default(UserViewModel);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var model = ViewModelUtility.CreateUserViewModel(user);
+
+            return Ok(model);
         }
     }
 }

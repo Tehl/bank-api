@@ -1,4 +1,5 @@
-﻿using IO.Swagger.Server.Filters;
+﻿using BankApi.Server.Services;
+using IO.Swagger.Server.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,10 @@ namespace BankApi.Server
                         CamelCaseText = true
                     });
                 });
+
+            // add application services
+            services
+                .AddAppDataRepositories();
 
             // add Swagger components
             services
