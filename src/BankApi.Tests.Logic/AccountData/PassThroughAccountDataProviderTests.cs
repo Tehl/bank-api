@@ -32,8 +32,8 @@ namespace BankApi.Tests.Logic.AccountData
             };
 
             var connection = Substitute.For<IBankConnection>();
-            connection.GetAccountDetails(bankId)
-                .Returns(
+            connection.GetAccountDetails(accountNumber)
+                .Returns(x =>
                     Task.FromResult(
                         new OperationResult<AccountDetails>(accountDetails)
                     )
@@ -46,9 +46,10 @@ namespace BankApi.Tests.Logic.AccountData
 
             var accountResult = await accountDataProvider.GetAccountDetails(bankId, accountNumber);
 
+            Assert.DoesNotThrow(() => connectionManager.Received().CreateConnection(bankId));
             Assert.DoesNotThrow(() => connection.Received().GetAccountDetails(accountNumber));
-            Assert.That(accountResult, Is.Not.Null);
-            Assert.That(accountResult, Is.EqualTo(accountDetails));
+            Assert.That(accountResult.Success, Is.True);
+            Assert.That(accountResult.Result, Is.EqualTo(accountDetails));
         }
     }
 }
