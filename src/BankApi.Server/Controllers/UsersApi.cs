@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using BankApi.Logic.BankConnections;
 using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
 using BankApi.Server.Utilities;
@@ -27,15 +29,25 @@ namespace BankApi.Server.Controllers
     /// </summary>
     public class UsersApiController : Controller
     {
+        private readonly IBankAccountRepository _accountRepository;
+        private readonly IBankConnectionManager _connectionManager;
         private readonly IUserRepository _userRepository;
 
         /// <summary>
         ///     Initializes the UsersApiController
         /// </summary>
         /// <param name="userRepository">Repository used to access AppUser information</param>
-        public UsersApiController(IUserRepository userRepository)
+        /// <param name="accountRepository">Repository used to access BankAccount information</param>
+        /// <param name="connectionManager">Connection manager used to query remote banking services</param>
+        public UsersApiController(
+            IUserRepository userRepository,
+            IBankAccountRepository accountRepository,
+            IBankConnectionManager connectionManager
+        )
         {
             _userRepository = userRepository;
+            _accountRepository = accountRepository;
+            _connectionManager = connectionManager;
         }
 
         /// <summary>
@@ -45,6 +57,7 @@ namespace BankApi.Server.Controllers
         /// <response code="200">Successfully created user account</response>
         /// <response code="400">New user data invalid</response>
         /// <response code="404">Bank account not found</response>
+        /// <response code="409">Account already exists</response>
         [HttpPost]
         [Route("/api/v1/users")]
         [ValidateModelState]
@@ -52,7 +65,8 @@ namespace BankApi.Server.Controllers
         [SwaggerResponse(200, typeof(UserViewModel), "Successfully created user account")]
         [SwaggerResponse(400, typeof(ErrorViewModel), "New user data invalid")]
         [SwaggerResponse(404, typeof(ErrorViewModel), "Bank account not found")]
-        public virtual IActionResult ApiV1UsersCreate(
+        [SwaggerResponse(409, typeof(ErrorViewModel), "Account already exists")]
+        public virtual async Task<IActionResult> ApiV1UsersCreate(
             [FromBody] CreateUserViewModel userData
         )
         {
@@ -64,6 +78,9 @@ namespace BankApi.Server.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404, default(ErrorViewModel));
+
+            //TODO: Uncomment the next line to return response 409 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
+            // return StatusCode(409, default(ErrorViewModel));
 
             string exampleJson = null;
             exampleJson = "{\r\n  \"user_id\" : 1,\r\n  \"username\" : \"John Doe\"\r\n}";
