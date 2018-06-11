@@ -14,12 +14,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BankApi.Logic.BankConnections;
+using BankApi.Logic.Data;
 using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
 using BankApi.Server.Utilities;
 using IO.Swagger.Server.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace BankApi.Server.Controllers
@@ -53,7 +53,7 @@ namespace BankApi.Server.Controllers
         /// <summary>
         ///     Creates a new user
         /// </summary>
-        /// <param name="userData">User data for the user to be created</param>
+        /// <param name="user_data">User data for the user to be created</param>
         /// <response code="200">Successfully created user account</response>
         /// <response code="400">New user data invalid</response>
         /// <response code="404">Bank account not found</response>
@@ -67,29 +67,76 @@ namespace BankApi.Server.Controllers
         [SwaggerResponse(404, typeof(ErrorViewModel), "Bank account not found")]
         [SwaggerResponse(409, typeof(ErrorViewModel), "Account already exists")]
         public virtual async Task<IActionResult> ApiV1UsersCreate(
-            [FromBody] CreateUserViewModel userData
+            [FromBody] CreateUserViewModel user_data
         )
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(UserViewModel));
+            if (user_data == null
+                || string.IsNullOrEmpty(user_data.Username)
+                || string.IsNullOrEmpty(user_data.BankId)
+                || string.IsNullOrEmpty(user_data.AccountNumber)
+            )
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.BadRequest,
+                    "All user_data fields must be supplied"
+                );
 
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400, default(ErrorViewModel));
+            if (!Validation.AccountNumberIsValid(user_data.AccountNumber))
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.BadRequest,
+                    $"Account number '{user_data.AccountNumber}' is invalid"
+                );
 
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404, default(ErrorViewModel));
+            if (!_connectionManager.GetRegisteredBankIds().Contains(user_data.BankId))
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.BadRequest,
+                    $"Banking service '{user_data.BankId}' is not available"
+                );
 
-            //TODO: Uncomment the next line to return response 409 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(409, default(ErrorViewModel));
+            var existingUser = _userRepository.GetUserByUsername(user_data.Username);
+            if (existingUser != null)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.Conflict,
+                    $"User '{user_data.Username}' already exists"
+                );
 
-            string exampleJson = null;
-            exampleJson = "{\r\n  \"user_id\" : 1,\r\n  \"username\" : \"John Doe\"\r\n}";
+            var existingAccount = _accountRepository.GetAccountByBankIdAndAccountNumber(
+                user_data.BankId,
+                user_data.AccountNumber
+            );
+            if (existingAccount != null)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.Conflict,
+                    $"Bank account '{user_data.AccountNumber}' is already registered"
+                );
 
-            var example = exampleJson != null
-                ? JsonConvert.DeserializeObject<UserViewModel>(exampleJson)
-                : default(UserViewModel);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var bankConnection = _connectionManager.CreateConnection(user_data.BankId);
+            var accountResult = await bankConnection.GetAccountDetails(user_data.AccountNumber);
+
+            if (!accountResult.Success)
+            {
+                var error = new ErrorViewModel
+                {
+                    Status = accountResult.StatusCode,
+                    Message = accountResult.Error.ErrorMessage,
+                    ErrorCode = accountResult.Error.ErrorCode
+                };
+
+                if (accountResult.StatusCode == (int) HttpStatusCode.NotFound)
+                    error.Message =
+                        $"Account number '{user_data.AccountNumber}' does not exist at bank {user_data.BankId}";
+
+                return new ObjectResult(error)
+                {
+                    StatusCode = accountResult.StatusCode
+                };
+            }
+
+            var appUser = _userRepository.CreateUser(user_data.Username);
+            _accountRepository.CreateAccount(appUser.Id, user_data.BankId, user_data.AccountNumber);
+
+            var model = ViewModelUtility.CreateUserViewModel(appUser);
+
+            return Ok(model);
         }
 
         /// <summary>
@@ -141,7 +188,7 @@ namespace BankApi.Server.Controllers
             if (user == null)
                 return ApiResponseUtility.ApiError(
                     HttpStatusCode.NotFound,
-                    $"User with id {user_id} does not exist"
+                    $"User with id '{user_id}' does not exist"
                 );
 
             var model = ViewModelUtility.CreateUserViewModel(user);

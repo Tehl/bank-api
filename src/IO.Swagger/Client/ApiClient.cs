@@ -94,7 +94,7 @@ namespace IO.Swagger.Client
         /// <param name="request">The RestSharp request object</param>
         private void InterceptRequest(IRestRequest request)
         {
-            throw new NotImplementedException();
+            // not required
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace IO.Swagger.Client
         /// <param name="response">The RestSharp response object</param>
         private void InterceptResponse(IRestRequest request, IRestResponse response)
         {
-            throw new NotImplementedException();
+            // not required
         }
 
         // Creates and sets up a RestRequest prior to a call.

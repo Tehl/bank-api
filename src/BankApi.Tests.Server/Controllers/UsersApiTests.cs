@@ -60,6 +60,7 @@ namespace BankApi.Tests.Server.Controllers
             );
 
             var connectionManager = Substitute.For<IBankConnectionManager>();
+            connectionManager.GetRegisteredBankIds().Returns(new List<string> {bankId});
             connectionManager.CreateConnection(bankId).Returns(bankConnection);
 
             // execute controller action
@@ -120,6 +121,7 @@ namespace BankApi.Tests.Server.Controllers
             );
 
             var connectionManager = Substitute.For<IBankConnectionManager>();
+            connectionManager.GetRegisteredBankIds().Returns(new List<string> {bankId});
             connectionManager.CreateConnection(bankId).Returns(bankConnection);
 
             var controller = new UsersApiController(userRepository, accountRepository, connectionManager);
@@ -254,9 +256,10 @@ namespace BankApi.Tests.Server.Controllers
             );
 
             var connectionManager = Substitute.For<IBankConnectionManager>();
+            connectionManager.GetRegisteredBankIds().Returns(new List<string> {bankId});
             connectionManager.CreateConnection(bankId).Returns(bankConnection);
 
-            var controller = new UsersApiController(userRepository, accountRepository, null);
+            var controller = new UsersApiController(userRepository, accountRepository, connectionManager);
 
             var actionResultBankAccountNotFound = await controller.ApiV1UsersCreate(new CreateUserViewModel
             {
@@ -347,7 +350,10 @@ namespace BankApi.Tests.Server.Controllers
             accountRepository.GetAccountByBankIdAndAccountNumber(bankId, accountNumber)
                 .Returns(new BankAccount {BankId = bankId, AccountNumber = accountNumber});
 
-            var controller = new UsersApiController(userRepository, accountRepository, null);
+            var connectionManager = Substitute.For<IBankConnectionManager>();
+            connectionManager.GetRegisteredBankIds().Returns(new List<string> {bankId});
+
+            var controller = new UsersApiController(userRepository, accountRepository, connectionManager);
 
             var actionResultDuplicateBankAccount = await controller.ApiV1UsersCreate(new CreateUserViewModel
             {
@@ -377,7 +383,10 @@ namespace BankApi.Tests.Server.Controllers
             var userRepository = Substitute.For<IUserRepository>();
             userRepository.GetUserByUsername(username).Returns(new AppUser {Username = username});
 
-            var controller = new UsersApiController(userRepository, null, null);
+            var connectionManager = Substitute.For<IBankConnectionManager>();
+            connectionManager.GetRegisteredBankIds().Returns(new List<string> {bankId});
+
+            var controller = new UsersApiController(userRepository, null, connectionManager);
 
             var actionResultDuplicateUser = await controller.ApiV1UsersCreate(new CreateUserViewModel
             {

@@ -36,7 +36,8 @@ namespace BankApi.Server
 
             // add application services
             services
-                .AddAppDataRepositories();
+                .AddAppDataRepositories()
+                .AddBankConnections();
 
             // add Swagger components
             services
