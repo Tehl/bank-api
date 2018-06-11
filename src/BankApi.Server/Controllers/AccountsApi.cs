@@ -10,6 +10,9 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using BankApi.Logic.AccountData;
+using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
 using IO.Swagger.Server.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +26,20 @@ namespace BankApi.Server.Controllers
     /// </summary>
     public class AccountsApiController : Controller
     {
+        private readonly IAccountDataProvider _accountDataProvider;
+        private readonly IBankAccountRepository _accountRepository;
+
+        /// <summary>
+        ///     Initializes the UserAccountsApiController
+        /// </summary>
+        /// <param name="accountRepository">Repository used to access BankAccount information</param>
+        /// <param name="accountDataProvider">Data provider which can fetch data for bank accounts</param>
+        public AccountsApiController(IBankAccountRepository accountRepository, IAccountDataProvider accountDataProvider)
+        {
+            _accountRepository = accountRepository;
+            _accountDataProvider = accountDataProvider;
+        }
+
         /// <summary>
         ///     Gets details about a specific account
         /// </summary>
@@ -37,7 +54,7 @@ namespace BankApi.Server.Controllers
         [SwaggerResponse(200, typeof(AccountDetailsViewModel), "Successfully retrieved account data")]
         [SwaggerResponse(400, typeof(ErrorViewModel), "account_id is invalid")]
         [SwaggerResponse(404, typeof(ErrorViewModel), "Account not found")]
-        public virtual IActionResult ApiV1AccountsGetById(
+        public virtual async Task<IActionResult> ApiV1AccountsGetById(
             [FromRoute] [Required] int? account_id
         )
         {
@@ -75,7 +92,7 @@ namespace BankApi.Server.Controllers
         [SwaggerResponse(200, typeof(List<TransactionViewModel>), "Successfully retrieved account data")]
         [SwaggerResponse(400, typeof(ErrorViewModel), "account_id is invalid")]
         [SwaggerResponse(404, typeof(ErrorViewModel), "Account not found")]
-        public virtual IActionResult ApiV1AccountsGetTransactionsByAccountId(
+        public virtual async Task<IActionResult> ApiV1AccountsGetTransactionsByAccountId(
             [FromRoute] [Required] int? account_id
         )
         {

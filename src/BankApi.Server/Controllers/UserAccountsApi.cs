@@ -30,6 +30,11 @@ namespace BankApi.Server.Controllers
         private readonly IBankAccountRepository _accountRepository;
         private readonly IUserRepository _userRepository;
 
+        /// <summary>
+        ///     Initializes the UserAccountsApiController
+        /// </summary>
+        /// <param name="userRepository">Repository used to access AppUser information</param>
+        /// <param name="accountRepository">Repository used to access BankAccount information</param>
         public UserAccountsApiController(IUserRepository userRepository, IBankAccountRepository accountRepository)
         {
             _userRepository = userRepository;
