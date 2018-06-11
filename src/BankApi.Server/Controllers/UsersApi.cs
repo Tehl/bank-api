@@ -10,6 +10,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
 using IO.Swagger.Server.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,13 @@ namespace BankApi.Server.Controllers
     /// </summary>
     public class UsersApiController : Controller
     {
+        private readonly IUserRepository _userRepository;
+
+        public UsersApiController(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+
         /// <summary>
         ///     Creates a new user
         /// </summary>
