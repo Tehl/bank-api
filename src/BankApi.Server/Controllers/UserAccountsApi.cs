@@ -10,6 +10,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
 using IO.Swagger.Server.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,19 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace BankApi.Server.Controllers
 {
     /// <summary>
+    ///     Provides API endpoints for the /users/{user_id}/accounts route
     /// </summary>
     public class UserAccountsApiController : Controller
     {
+        private readonly IBankAccountRepository _accountRepository;
+        private readonly IUserRepository _userRepository;
+
+        public UserAccountsApiController(IUserRepository userRepository, IBankAccountRepository accountRepository)
+        {
+            _userRepository = userRepository;
+            _accountRepository = accountRepository;
+        }
+
         /// <summary>
         ///     Adds a new bank account to a user
         /// </summary>
