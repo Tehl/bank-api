@@ -7,6 +7,11 @@ namespace BankApi.Logic.AccountData
     /// <summary>
     ///     Implements IAccountDataProvider by passing queries directly to the remote connection manager
     /// </summary>
+    /// <remarks>
+    ///     This implementation passes all queries directly to the remote service, via IBankConnectionManager.
+    ///     Future implementations could query a local cache or SQL database, or provide transaction categorisation
+    ///     as part of the fetch operation.
+    /// </remarks>
     public class PassThroughAccountDataProvider : IAccountDataProvider
     {
         private readonly IBankConnectionManager _connectionManager;

@@ -10,10 +10,12 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Threading.Tasks;
 using BankApi.Logic.AccountData;
 using BankApi.Logic.Data.Repositories;
 using BankApi.Server.Models;
+using BankApi.Server.Utilities;
 using IO.Swagger.Server.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -58,24 +60,43 @@ namespace BankApi.Server.Controllers
             [FromRoute] [Required] int? account_id
         )
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(AccountDetailsViewModel));
+            if (!account_id.HasValue)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.BadRequest,
+                    "account_id is required"
+                );
 
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400, default(ErrorViewModel));
+            var account = _accountRepository.GetAccountById(account_id.Value);
 
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404, default(ErrorViewModel));
+            if (account == null)
+                return ApiResponseUtility.ApiError(
+                    HttpStatusCode.NotFound,
+                    $"Bank account with id '{account_id}' does not exist"
+                );
 
-            string exampleJson = null;
-            exampleJson =
-                "{\r\n  \"account_id\" : 1,\r\n  \"bank_id\" : \"BizfiBank\",\r\n  \"account_name\" : \"Current Account\",\r\n  \"account_number\" : \"00112233\",\r\n  \"sort_code\" : \"079046\",\r\n  \"current_balance\" : \"350,\",\r\n  \"overdraft_limit\" : 50\r\n}";
+            // when we are fetching account details for a known account, we use the account data service
+            // rather than accessing the connection directly. this allows the service to perform caching
+            // and additional post-processing on the account data before it is returned to the user
+            var accountResult = await _accountDataProvider.GetAccountDetails(account.BankId, account.AccountNumber);
 
-            var example = exampleJson != null
-                ? JsonConvert.DeserializeObject<AccountDetailsViewModel>(exampleJson)
-                : default(AccountDetailsViewModel);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            if (!accountResult.Success)
+            {
+                var error = new ErrorViewModel
+                {
+                    Status = accountResult.StatusCode,
+                    Message = accountResult.Error.ErrorMessage,
+                    ErrorCode = accountResult.Error.ErrorCode
+                };
+
+                return new ObjectResult(error)
+                {
+                    StatusCode = accountResult.StatusCode
+                };
+            }
+
+            var model = ViewModelUtility.CreateAccountDetailsViewModel(account, accountResult.Result);
+
+            return Ok(model);
         }
 
         /// <summary>

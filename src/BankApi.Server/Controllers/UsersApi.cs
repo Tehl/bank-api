@@ -109,6 +109,8 @@ namespace BankApi.Server.Controllers
                     $"Bank account '{user_data.AccountNumber}' is already registered"
                 );
 
+            // when we are registering a new account, we go directly to the bank connection to verify the account,
+            // as it will not yet exist in our system
             var bankConnection = _connectionManager.CreateConnection(user_data.BankId);
             var accountResult = await bankConnection.GetAccountDetails(user_data.AccountNumber);
 

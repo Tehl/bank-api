@@ -1,4 +1,5 @@
-﻿using BankApi.Logic.Data.Models;
+﻿using BankApi.Logic.BankConnections.Data;
+using BankApi.Logic.Data.Models;
 using BankApi.Server.Models;
 
 namespace BankApi.Server.Utilities
@@ -34,6 +35,29 @@ namespace BankApi.Server.Utilities
                 AccountId = bankAccount.Id,
                 BankId = bankAccount.BankId,
                 AccountNumber = bankAccount.AccountNumber
+            };
+        }
+
+        /// <summary>
+        ///     Creates a AccountDetailsViewModel from an BankAccount instance
+        /// </summary>
+        /// <param name="bankAccount">BankAccount to create a AccountDetailsViewModel from</param>
+        /// <param name="accountDetails">AccountDetails instance providing additional data about the BankAccount</param>
+        /// <returns>AccountDetailsViewModel instance representing the specified BankAccount</returns>
+        public static AccountDetailsViewModel CreateAccountDetailsViewModel(
+            BankAccount bankAccount,
+            AccountDetails accountDetails
+        )
+        {
+            return new AccountDetailsViewModel
+            {
+                AccountId = bankAccount.Id,
+                BankId = bankAccount.BankId,
+                AccountNumber = bankAccount.AccountNumber,
+                AccountName = accountDetails.AccountName,
+                SortCode = accountDetails.SortCode,
+                CurrentBalance = accountDetails.CurrentBalance,
+                OverdraftLimit = accountDetails.OverdraftLimit
             };
         }
     }
