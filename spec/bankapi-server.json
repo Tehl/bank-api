@@ -322,6 +322,144 @@
           }
         }
       }
+    },
+    "/api/v1/accounts/{account_id}": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Gets details about a specific account",
+        "operationId": "ApiV1AccountsGetById",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "description": "Id of the account to return",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved account data",
+            "schema": {
+              "$ref": "#/definitions/AccountDetailsViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "account_id": 1,
+                "bank_id": "BizfiBank",
+                "account_name": "Current Account",
+                "account_number": "00112233",
+                "sort_code": "079046",
+                "current_balance": "350,",
+                "overdraft_limit": 50
+              }
+            }
+          },
+          "400": {
+            "description": "account_id is invalid",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "account_id is required",
+                "status": 400
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Unable to find account with account id '{account_id}'",
+                "status": 404
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/{account_id}/transactions": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Gets a list of transactions for the specified account",
+        "operationId": "ApiV1AccountsGetTransactionsByAccountId",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "description": "Id of the bank account to fetch transactions for",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved account data",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TransactionViewModel"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "amount": 5.99,
+                  "description": "Amazon UK",
+                  "date": "2018-04-23T00:00:00+00:00"
+                },
+                {
+                  "amount": 40,
+                  "description": "Cashlink",
+                  "date": "2018-04-20T17:50:23+00:00"
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "account_id is invalid",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "account_id is required",
+                "status": 400
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorViewModel"
+            },
+            "examples": {
+              "application/json": {
+                "message": "Unable to find account with account id '{account_id}'",
+                "status": 404
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -383,6 +521,60 @@
         },
         "account_number": {
           "description": "The account number which identifies the bank account",
+          "type": "string"
+        }
+      }
+    },
+    "AccountDetailsViewModel": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "description": "The id of the bank account",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bank_id": {
+          "description": "The id of the bank which holds the account",
+          "type": "string"
+        },
+        "account_name": {
+          "description": "The name of the bank account",
+          "type": "string"
+        },
+        "account_number": {
+          "description": "The account number which identifies the bank account",
+          "type": "string"
+        },
+        "sort_code": {
+          "description": "The sort code of the bank account",
+          "type": "string"
+        },
+        "current_balance": {
+          "description": "The current balance of the bank account",
+          "type": "number",
+          "format": "double"
+        },
+        "overdraft_limit": {
+          "description": "The overdraft limit of the bank account",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "TransactionViewModel": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "description": "The size of the transaction",
+          "type": "number",
+          "format": "double"
+        },
+        "description": {
+          "description": "Information about the merchant who performed the transaction",
+          "type": "string"
+        },
+        "date": {
+          "description": "The date and time of the transaction",
           "type": "string"
         }
       }
